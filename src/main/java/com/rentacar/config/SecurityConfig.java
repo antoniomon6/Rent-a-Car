@@ -41,7 +41,7 @@ public class SecurityConfig {
                         // --- REGLAS DE NEGOCIO ESPECÍFICAS (MVC) ---
                         .requestMatchers("/vehiculos/eliminar/**", "/clientes/eliminar/**").hasRole("ADMIN")
 
-                        // Cualquier usuario autenticado (USER o ADMIN) puede hacer todo lo demás
+                        // Cualquier usuario autenticado (USER o ADMIN) puede hacer lo demás
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
@@ -66,8 +66,7 @@ public class SecurityConfig {
                             response.getWriter().write("{\"error\": \"Forbidden\", \"message\": \"Insufficient permissions\"}");
                         }, request -> request.getRequestURI().startsWith("/api/"))
                         
-                        // NOTA: No definimos un entry point global manual. 
-                        // Spring Security usará automáticamente LoginUrlAuthenticationEntryPoint para MVC (lo que arregla el bucle).
+
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

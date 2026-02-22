@@ -16,7 +16,6 @@ public class VehiculoDTO {
     @NotNull(message = "El estado es obligatorio")
     private Vehiculo.EstadoVehiculo estado;
 
-    // Constructores, Getters y Setters
     public VehiculoDTO() {}
     public VehiculoDTO(String matricula, String modelo, Double precioDia, Vehiculo.EstadoVehiculo estado) {
         this.matricula = matricula;

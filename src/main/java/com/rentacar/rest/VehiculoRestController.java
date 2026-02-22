@@ -61,7 +61,7 @@ public class VehiculoRestController {
         return ResponseEntity.notFound().build();
     }
 
-    // UC 3: Listar por rango de precio
+    // Listar por rango de precio
     @Operation(summary = "Listar vehículos por rango de precio")
     @GetMapping("/buscar")
     public List<VehiculoDTO> buscarPorPrecio(@RequestParam Double min, @RequestParam Double max) {

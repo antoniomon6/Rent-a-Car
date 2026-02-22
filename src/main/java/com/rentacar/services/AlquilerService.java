@@ -19,13 +19,13 @@ public interface AlquilerService {
     Optional<AlquilerDTO> obtenerAlquilerDTOPorId(Long id);
     void eliminarAlquiler(Long id);
     
-    // UC 5: Devolver Vehículo
+    // Devolver Vehículo
     void devolverVehiculo(Long alquilerId);
 
-    // UC 7: Ingresos por mes
+    // Ingresos por mes
     Double obtenerIngresosPorMes(int mes, int anio);
 
-    // UC 8: Historial Cliente
+    // Historial Cliente
     List<Alquiler> obtenerHistorialCliente(String dni);
 
     // --- Clientes ---
@@ -37,7 +37,7 @@ public interface AlquilerService {
     Optional<ClienteDTO> obtenerClienteDTOPorDni(String dni);
     void eliminarCliente(String dni);
     
-    // UC 6: Clientes por facturación
+    // Clientes por facturación
     List<Cliente> listarClientesPorFacturacion();
 
     // --- Vehículos ---
@@ -49,6 +49,6 @@ public interface AlquilerService {
     Optional<VehiculoDTO> obtenerVehiculoDTOPorMatricula(String matricula);
     void eliminarVehiculo(String matricula);
     
-    // UC 3: Vehículos por precio
+    // Vehículos por precio
     List<Vehiculo> listarVehiculosPorPrecio(Double min, Double max);
 }

@@ -57,14 +57,12 @@ public class AlquilerController {
         return "redirect:/alquileres";
     }
 
-    // UC 5: Devolver Vehículo
     @GetMapping("/devolver/{id}")
     public String devolverVehiculo(@PathVariable Long id) {
         alquilerService.devolverVehiculo(id);
         return "redirect:/alquileres";
     }
 
-    // UC 7: Reporte de Ingresos
     @GetMapping("/reportes/ingresos")
     public String reporteIngresos(@RequestParam(required = false) Integer mes, 
                                   @RequestParam(required = false) Integer anio, 
@@ -79,7 +77,6 @@ public class AlquilerController {
         return "reporte-ingresos";
     }
 
-    // UC 8: Historial Cliente
     @GetMapping("/historial/{dni}")
     public String historialCliente(@PathVariable String dni, Model model) {
         model.addAttribute("alquileres", alquilerService.obtenerHistorialCliente(dni));

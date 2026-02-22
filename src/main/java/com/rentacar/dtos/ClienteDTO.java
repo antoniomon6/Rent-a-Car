@@ -13,7 +13,6 @@ public class ClienteDTO {
     private String email;
     private String telefono;
 
-    // Constructores, Getters y Setters
     public ClienteDTO() {}
     public ClienteDTO(String dni, String nombre, String email, String telefono) {
         this.dni = dni;

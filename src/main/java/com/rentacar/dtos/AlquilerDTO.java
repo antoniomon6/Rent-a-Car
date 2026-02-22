@@ -15,7 +15,6 @@ public class AlquilerDTO {
     @NotNull(message = "La matrícula del vehículo es obligatoria")
     private String vehiculoMatricula;
 
-    // Constructores, Getters y Setters
     public AlquilerDTO() {}
     public AlquilerDTO(Long id, LocalDate fechaInicio, LocalDate fechaFin, Double costoTotal, String clienteDni, String vehiculoMatricula) {
         this.id = id;

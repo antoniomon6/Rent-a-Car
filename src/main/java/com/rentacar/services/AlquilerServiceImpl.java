@@ -36,12 +36,12 @@ public class AlquilerServiceImpl implements AlquilerService {
     @Override
     @Transactional
     public Alquiler crearAlquiler(Alquiler alquiler) {
-        // 1. Validación de fechas
+        //  Validación de fechas
         if (alquiler.getFechaFin().isBefore(alquiler.getFechaInicio())) {
             throw new ReglaNegocioException("La fecha de fin debe ser posterior a la fecha de inicio");
         }
 
-        // 2. Disponibilidad
+        // Disponibilidad
         Vehiculo vehiculo = vehiculoRepository.findById(alquiler.getVehiculo().getMatricula())
                 .orElseThrow(() -> new ReglaNegocioException("Vehículo no encontrado"));
 
@@ -56,7 +56,7 @@ public class AlquilerServiceImpl implements AlquilerService {
             throw new ReglaNegocioException("El vehículo ya está alquilado en esas fechas");
         }
 
-        // 3. Cálculo automático
+        // Cálculo automático
         long dias = ChronoUnit.DAYS.between(alquiler.getFechaInicio(), alquiler.getFechaFin());
         alquiler.setCostoTotal(dias * vehiculo.getPrecioDia());
 
