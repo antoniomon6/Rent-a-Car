@@ -1,6 +1,7 @@
 package com.rentacar.controllers;
 
 import com.rentacar.entidades.Vehiculo;
+import com.rentacar.excepciones.ReglaNegocioException;
 import com.rentacar.services.AlquilerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,11 +31,16 @@ public class VehiculoController {
     }
 
     @PostMapping
-    public String guardarVehiculo(@Valid @ModelAttribute("vehiculo") Vehiculo vehiculo, BindingResult result) {
+    public String guardarVehiculo(@Valid @ModelAttribute("vehiculo") Vehiculo vehiculo, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "form-vehiculo";
         }
-        alquilerService.guardarVehiculo(vehiculo);
+        try {
+            alquilerService.guardarVehiculo(vehiculo);
+        } catch (ReglaNegocioException e) {
+            model.addAttribute("error", e.getMessage());
+            return "form-vehiculo";
+        }
         return "redirect:/vehiculos";
     }
 

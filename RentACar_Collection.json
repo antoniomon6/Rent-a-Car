@@ -1,0 +1,563 @@
+{
+	"info": {
+		"_postman_id": "rent-a-car-collection-id",
+		"name": "Rent-a-Car API",
+		"description": "Colección para probar la API REST de Rent-a-Car con seguridad JWT y casos de borde.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0. Autenticación",
+			"item": [
+				{
+					"name": "1. Login ADMIN (Guarda Token)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"token\", jsonData.token);",
+									"console.log(\"Token de Admin guardado\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Obtiene token con rol ADMIN. Ejecutar PRIMERO."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Login USER (Guarda Token)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"token\", jsonData.token);",
+									"console.log(\"Token de User guardado\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"user\",\n    \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Obtiene token con rol USER. Usar para probar prohibiciones (403)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1. Clientes",
+			"item": [
+				{
+					"name": "Listar Clientes (200 OK)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/clientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clientes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Cliente (201 Created)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dni\": \"99999999Z\",\n    \"nombre\": \"Cliente API Test\",\n    \"email\": \"api.test@example.com\",\n    \"telefono\": \"666777888\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clientes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Cliente - Error Validación (400 Bad Request)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dni\": \"\",\n    \"nombre\": \"\",\n    \"email\": \"email-invalido\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clientes"
+							]
+						},
+						"description": "Falla por campos vacíos y email inválido."
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Cliente - Conflicto Email (409 Conflict)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dni\": \"88888888X\",\n    \"nombre\": \"Duplicado\",\n    \"email\": \"api.test@example.com\",\n    \"telefono\": \"111222333\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clientes"
+							]
+						},
+						"description": "Falla porque el email ya existe (creado en el paso anterior)."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Cliente (ADMIN: 204 / USER: 403)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/clientes/99999999Z",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clientes",
+								"99999999Z"
+							]
+						},
+						"description": "Si usas token ADMIN: Borra (204). Si usas token USER: Prohibido (403)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Vehículos",
+			"item": [
+				{
+					"name": "Listar Vehículos (200 OK)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/vehiculos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"vehiculos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Vehículo (201 Created)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"matricula\": \"API-0001\",\n    \"modelo\": \"Tesla Model 3\",\n    \"precioDia\": 120.0,\n    \"estado\": \"DISPONIBLE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/vehiculos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"vehiculos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Vehículo - Error Validación (400 Bad Request)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"matricula\": \"\",\n    \"precioDia\": -50.0,\n    \"estado\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/vehiculos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"vehiculos"
+							]
+						},
+						"description": "Falla por precio negativo y estado nulo."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Vehículo (ADMIN: 204 / USER: 403)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/vehiculos/API-0001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"vehiculos",
+								"API-0001"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Alquileres",
+			"item": [
+				{
+					"name": "Preparación: Crear Cliente para Alquiler",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dni\": \"ALQ-USER\",\n    \"nombre\": \"Usuario Alquiler\",\n    \"email\": \"alq@test.com\",\n    \"telefono\": \"000000000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clientes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Preparación: Crear Vehículo para Alquiler",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"matricula\": \"ALQ-CAR\",\n    \"modelo\": \"Fiat Panda\",\n    \"precioDia\": 30.0,\n    \"estado\": \"DISPONIBLE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/vehiculos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"vehiculos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Alquiler (201 Created)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if(jsonData.id) {",
+									"    pm.collectionVariables.set(\"alquiler_id\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clienteDni\": \"ALQ-USER\",\n    \"vehiculoMatricula\": \"ALQ-CAR\",\n    \"fechaInicio\": \"2024-06-01\",\n    \"fechaFin\": \"2024-06-05\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/alquileres",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alquileres"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Alquiler - Error Fechas (409 Conflict)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clienteDni\": \"ALQ-USER\",\n    \"vehiculoMatricula\": \"ALQ-CAR\",\n    \"fechaInicio\": \"2024-06-10\",\n    \"fechaFin\": \"2024-06-01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/alquileres",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alquileres"
+							]
+						},
+						"description": "Falla porque fecha fin es anterior a inicio."
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Alquiler - Error Solapamiento (409 Conflict)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clienteDni\": \"ALQ-USER\",\n    \"vehiculoMatricula\": \"ALQ-CAR\",\n    \"fechaInicio\": \"2024-06-02\",\n    \"fechaFin\": \"2024-06-03\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/alquileres",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alquileres"
+							]
+						},
+						"description": "Falla porque el coche ya está alquilado del 1 al 5 de junio."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Alquiler (204 No Content)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/alquileres/{{alquiler_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alquileres",
+								"{{alquiler_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Alquiler - No Existe (404 Not Found)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/alquileres/999999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alquileres",
+								"999999"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8093",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "alquiler_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -1,40 +1,54 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestión de Clientes</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Gestión de Clientes')}"></head>
 <body>
-    <nav>
-        <a href="/alquileres">Alquileres</a> |
-        <a href="/vehiculos">Vehículos</a> |
-        <a href="/clientes">Clientes</a>
-    </nav>
-    <h1>Gestión de Clientes</h1>
+    <nav th:replace="~{layout :: nav}"></nav>
+    
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2"><i class="bi bi-people-fill"></i> Gestión de Clientes</h1>
+            <a href="/clientes/nuevo" class="btn btn-primary">
+                <i class="bi bi-person-plus-fill"></i> Nuevo Cliente
+            </a>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>DNI</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th class="text-center" sec:authorize="hasRole('ADMIN')">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="cliente : ${clientes}">
+                                <td th:text="${cliente.dni}"></td>
+                                <td th:text="${cliente.nombre}"></td>
+                                <td th:text="${cliente.email}"></td>
+                                <td th:text="${cliente.telefono}"></td>
+                                <td class="text-center" sec:authorize="hasRole('ADMIN')">
+                                    <a th:href="@{/clientes/eliminar/{dni}(dni=${cliente.dni})}" 
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('¿Estás seguro de eliminar este cliente?');">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(clientes)}">
+                                <td colspan="5" class="text-center py-4 text-muted">No hay clientes registrados.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <a href="/clientes/nuevo">Nuevo Cliente</a>
-    <br><br>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>DNI</th>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="cliente : ${clientes}">
-                <td th:text="${cliente.dni}"></td>
-                <td th:text="${cliente.nombre}"></td>
-                <td th:text="${cliente.email}"></td>
-                <td th:text="${cliente.telefono}"></td>
-                <td>
-                    <a th:href="@{/clientes/eliminar/{dni}(dni=${cliente.dni})}"><button>Eliminar</button></a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <footer th:replace="~{layout :: footer}"></footer>
 </body>
 </html>

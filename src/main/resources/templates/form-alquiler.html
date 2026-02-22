@@ -1,47 +1,68 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Formulario de Alquiler</title>
-</head>
+<head th:replace="~{layout :: head('Nuevo Alquiler')}"></head>
 <body>
-    <nav>
-        <a href="/alquileres">Alquileres</a> |
-        <a href="/vehiculos">Vehículos</a> |
-        <a href="/clientes">Clientes</a>
-    </nav>
-    <h1>Nuevo Alquiler</h1>
+    <nav th:replace="~{layout :: nav}"></nav>
     
-    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
-    
-    <form th:action="@{/alquileres}" th:object="${alquiler}" method="post">
-        <div>
-            <label for="cliente">Cliente:</label>
-            <select id="cliente" th:field="*{cliente}">
-                <option th:each="c : ${clientes}" th:value="${c.dni}" th:text="${c.nombre}"></option>
-            </select>
-            <span th:if="${#fields.hasErrors('cliente')}" th:errors="*{cliente}">Error en cliente</span>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0"><i class="bi bi-calendar-plus"></i> Nuevo Alquiler</h3>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+
+                        <form th:action="@{/alquileres}" th:object="${alquiler}" method="post" class="needs-validation" novalidate>
+                            
+                            <div class="mb-3">
+                                <label for="cliente" class="form-label">Cliente</label>
+                                <select id="cliente" th:field="*{cliente}" class="form-select" th:classappend="${#fields.hasErrors('cliente')} ? 'is-invalid'">
+                                    <option value="" disabled selected>Seleccione un cliente</option>
+                                    <option th:each="c : ${clientes}" th:value="${c.dni}" th:text="${c.nombre} + ' (' + ${c.dni} + ')'"></option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('cliente')}" th:errors="*{cliente}">Error en cliente</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="vehiculo" class="form-label">Vehículo</label>
+                                <select id="vehiculo" th:field="*{vehiculo}" class="form-select" th:classappend="${#fields.hasErrors('vehiculo')} ? 'is-invalid'">
+                                    <option value="" disabled selected>Seleccione un vehículo</option>
+                                    <option th:each="v : ${vehiculos}" th:value="${v.matricula}" th:text="${v.modelo} + ' - ' + ${v.precioDia} + '€/día'"></option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('vehiculo')}" th:errors="*{vehiculo}">Error en vehículo</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                                    <input type="date" id="fechaInicio" th:field="*{fechaInicio}" class="form-control" th:classappend="${#fields.hasErrors('fechaInicio')} ? 'is-invalid'" required />
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}">Error en fecha inicio</div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaFin" class="form-label">Fecha Fin</label>
+                                    <input type="date" id="fechaFin" th:field="*{fechaFin}" class="form-control" th:classappend="${#fields.hasErrors('fechaFin')} ? 'is-invalid'" required />
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}">Error en fecha fin</div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="/alquileres" class="btn btn-secondary me-md-2">Cancelar</a>
+                                <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Guardar Alquiler</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="vehiculo">Vehículo:</label>
-            <select id="vehiculo" th:field="*{vehiculo}">
-                <option th:each="v : ${vehiculos}" th:value="${v.matricula}" th:text="${v.modelo}"></option>
-            </select>
-            <span th:if="${#fields.hasErrors('vehiculo')}" th:errors="*{vehiculo}">Error en vehículo</span>
-        </div>
-        <div>
-            <label for="fechaInicio">Fecha Inicio:</label>
-            <input type="date" id="fechaInicio" th:field="*{fechaInicio}" required />
-            <span th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}">Error en fecha inicio</span>
-        </div>
-        <div>
-            <label for="fechaFin">Fecha Fin:</label>
-            <input type="date" id="fechaFin" th:field="*{fechaFin}" required />
-            <span th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}">Error en fecha fin</span>
-        </div>
-        <br>
-        <button type="submit">Guardar</button>
-        <a href="/alquileres">Cancelar</a>
-    </form>
+    </div>
+
+    <footer th:replace="~{layout :: footer}"></footer>
 </body>
 </html>

@@ -1,5 +1,8 @@
 package com.rentacar.services;
 
+import com.rentacar.dtos.AlquilerDTO;
+import com.rentacar.dtos.ClienteDTO;
+import com.rentacar.dtos.VehiculoDTO;
 import com.rentacar.entidades.Alquiler;
 import com.rentacar.entidades.Cliente;
 import com.rentacar.entidades.Vehiculo;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AlquilerServiceImpl implements AlquilerService {
@@ -27,15 +31,17 @@ public class AlquilerServiceImpl implements AlquilerService {
     @Autowired
     private VehiculoRepository vehiculoRepository;
 
+    // --- Métodos para Alquiler ---
+
     @Override
     @Transactional
     public Alquiler crearAlquiler(Alquiler alquiler) {
-        // Validación de fechas
+        // 1. Validación de fechas: La fecha de fin debe ser posterior a la de inicio
         if (alquiler.getFechaFin().isBefore(alquiler.getFechaInicio())) {
             throw new ReglaNegocioException("La fecha de fin debe ser posterior a la fecha de inicio");
         }
 
-        // Validación de disponibilidad del vehículo
+        // 2. Disponibilidad: No se puede alquilar un coche que esté en estado "En Reparación" o ya alquilado en esas fechas
         Vehiculo vehiculo = vehiculoRepository.findById(alquiler.getVehiculo().getMatricula())
                 .orElseThrow(() -> new ReglaNegocioException("Vehículo no encontrado"));
 
@@ -50,7 +56,7 @@ public class AlquilerServiceImpl implements AlquilerService {
             throw new ReglaNegocioException("El vehículo ya está alquilado en esas fechas");
         }
 
-        // Cálculo automático del costo total
+        // 3. Cálculo automático: El costo_total se calcula solo al guardar: (dias * precio_dia)
         long dias = ChronoUnit.DAYS.between(alquiler.getFechaInicio(), alquiler.getFechaFin());
         alquiler.setCostoTotal(dias * vehiculo.getPrecioDia());
 
@@ -62,8 +68,33 @@ public class AlquilerServiceImpl implements AlquilerService {
     }
 
     @Override
+    @Transactional
+    public AlquilerDTO crearAlquilerDTO(AlquilerDTO alquilerDTO) {
+        Cliente cliente = clienteRepository.findById(alquilerDTO.getClienteDni())
+                .orElseThrow(() -> new ReglaNegocioException("Cliente no encontrado"));
+        Vehiculo vehiculo = vehiculoRepository.findById(alquilerDTO.getVehiculoMatricula())
+                .orElseThrow(() -> new ReglaNegocioException("Vehículo no encontrado"));
+
+        Alquiler alquiler = new Alquiler();
+        alquiler.setFechaInicio(alquilerDTO.getFechaInicio());
+        alquiler.setFechaFin(alquilerDTO.getFechaFin());
+        alquiler.setCliente(cliente);
+        alquiler.setVehiculo(vehiculo);
+
+        Alquiler nuevoAlquiler = crearAlquiler(alquiler);
+        return mapToAlquilerDTO(nuevoAlquiler);
+    }
+
+    @Override
     public List<Alquiler> listarAlquileres() {
         return alquilerRepository.findAll();
+    }
+
+    @Override
+    public List<AlquilerDTO> listarAlquileresDTO() {
+        return alquilerRepository.findAll().stream()
+                .map(this::mapToAlquilerDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -72,11 +103,17 @@ public class AlquilerServiceImpl implements AlquilerService {
     }
 
     @Override
+    public Optional<AlquilerDTO> obtenerAlquilerDTOPorId(Long id) {
+        return alquilerRepository.findById(id).map(this::mapToAlquilerDTO);
+    }
+
+    @Override
     public void eliminarAlquiler(Long id) {
         alquilerRepository.deleteById(id);
     }
 
-    // Métodos para Cliente
+    // --- Métodos para Cliente ---
+
     @Override
     public Cliente guardarCliente(Cliente cliente) {
         if (clienteRepository.existsByEmail(cliente.getEmail())) {
@@ -86,8 +123,27 @@ public class AlquilerServiceImpl implements AlquilerService {
     }
 
     @Override
+    public ClienteDTO guardarClienteDTO(ClienteDTO clienteDTO) {
+        Cliente cliente = new Cliente();
+        cliente.setDni(clienteDTO.getDni());
+        cliente.setNombre(clienteDTO.getNombre());
+        cliente.setEmail(clienteDTO.getEmail());
+        cliente.setTelefono(clienteDTO.getTelefono());
+        
+        Cliente nuevoCliente = guardarCliente(cliente);
+        return mapToClienteDTO(nuevoCliente);
+    }
+
+    @Override
     public List<Cliente> listarClientes() {
         return clienteRepository.findAll();
+    }
+
+    @Override
+    public List<ClienteDTO> listarClientesDTO() {
+        return clienteRepository.findAll().stream()
+                .map(this::mapToClienteDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -96,14 +152,32 @@ public class AlquilerServiceImpl implements AlquilerService {
     }
 
     @Override
+    public Optional<ClienteDTO> obtenerClienteDTOPorDni(String dni) {
+        return clienteRepository.findById(dni).map(this::mapToClienteDTO);
+    }
+
+    @Override
     public void eliminarCliente(String dni) {
         clienteRepository.deleteById(dni);
     }
 
-    // Métodos para Vehiculo
+    // --- Métodos para Vehiculo ---
+
     @Override
     public Vehiculo guardarVehiculo(Vehiculo vehiculo) {
         return vehiculoRepository.save(vehiculo);
+    }
+
+    @Override
+    public VehiculoDTO guardarVehiculoDTO(VehiculoDTO vehiculoDTO) {
+        Vehiculo vehiculo = new Vehiculo();
+        vehiculo.setMatricula(vehiculoDTO.getMatricula());
+        vehiculo.setModelo(vehiculoDTO.getModelo());
+        vehiculo.setPrecioDia(vehiculoDTO.getPrecioDia());
+        vehiculo.setEstado(vehiculoDTO.getEstado());
+
+        Vehiculo nuevoVehiculo = guardarVehiculo(vehiculo);
+        return mapToVehiculoDTO(nuevoVehiculo);
     }
 
     @Override
@@ -112,8 +186,20 @@ public class AlquilerServiceImpl implements AlquilerService {
     }
 
     @Override
+    public List<VehiculoDTO> listarVehiculosDTO() {
+        return vehiculoRepository.findAll().stream()
+                .map(this::mapToVehiculoDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<Vehiculo> obtenerVehiculoPorMatricula(String matricula) {
         return vehiculoRepository.findById(matricula);
+    }
+
+    @Override
+    public Optional<VehiculoDTO> obtenerVehiculoDTOPorMatricula(String matricula) {
+        return vehiculoRepository.findById(matricula).map(this::mapToVehiculoDTO);
     }
 
     @Override
@@ -124,5 +210,36 @@ public class AlquilerServiceImpl implements AlquilerService {
     @Override
     public List<Vehiculo> listarVehiculosPorPrecio(Double min, Double max) {
         return vehiculoRepository.findByPrecioDiaBetween(min, max);
+    }
+
+    // --- Mappers ---
+
+    private AlquilerDTO mapToAlquilerDTO(Alquiler alquiler) {
+        return new AlquilerDTO(
+                alquiler.getId(),
+                alquiler.getFechaInicio(),
+                alquiler.getFechaFin(),
+                alquiler.getCostoTotal(),
+                alquiler.getCliente().getDni(),
+                alquiler.getVehiculo().getMatricula()
+        );
+    }
+
+    private ClienteDTO mapToClienteDTO(Cliente cliente) {
+        return new ClienteDTO(
+                cliente.getDni(),
+                cliente.getNombre(),
+                cliente.getEmail(),
+                cliente.getTelefono()
+        );
+    }
+
+    private VehiculoDTO mapToVehiculoDTO(Vehiculo vehiculo) {
+        return new VehiculoDTO(
+                vehiculo.getMatricula(),
+                vehiculo.getModelo(),
+                vehiculo.getPrecioDia(),
+                vehiculo.getEstado()
+        );
     }
 }

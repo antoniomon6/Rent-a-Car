@@ -1,6 +1,6 @@
 package com.rentacar.rest;
 
-import com.rentacar.entidades.Cliente;
+import com.rentacar.dtos.ClienteDTO;
 import com.rentacar.services.AlquilerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,8 +22,8 @@ public class ClienteRestController {
 
     @Operation(summary = "Listar todos los clientes")
     @GetMapping
-    public List<Cliente> listarClientes() {
-        return alquilerService.listarClientes();
+    public List<ClienteDTO> listarClientes() {
+        return alquilerService.listarClientesDTO();
     }
 
     @Operation(summary = "Crear un nuevo cliente")
@@ -33,8 +33,8 @@ public class ClienteRestController {
             @ApiResponse(responseCode = "409", description = "Conflicto (email duplicado)")
     })
     @PostMapping
-    public ResponseEntity<Cliente> crearCliente(@Valid @RequestBody Cliente cliente) {
-        Cliente nuevoCliente = alquilerService.guardarCliente(cliente);
+    public ResponseEntity<ClienteDTO> crearCliente(@Valid @RequestBody ClienteDTO clienteDTO) {
+        ClienteDTO nuevoCliente = alquilerService.guardarClienteDTO(clienteDTO);
         return new ResponseEntity<>(nuevoCliente, HttpStatus.CREATED);
     }
 
@@ -44,8 +44,8 @@ public class ClienteRestController {
             @ApiResponse(responseCode = "404", description = "Cliente no encontrado")
     })
     @GetMapping("/{dni}")
-    public ResponseEntity<Cliente> obtenerCliente(@PathVariable String dni) {
-        return alquilerService.obtenerClientePorDni(dni)
+    public ResponseEntity<ClienteDTO> obtenerCliente(@PathVariable String dni) {
+        return alquilerService.obtenerClienteDTOPorDni(dni)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -53,7 +53,7 @@ public class ClienteRestController {
     @Operation(summary = "Eliminar cliente por DNI")
     @DeleteMapping("/{dni}")
     public ResponseEntity<Void> eliminarCliente(@PathVariable String dni) {
-        if (alquilerService.obtenerClientePorDni(dni).isPresent()) {
+        if (alquilerService.obtenerClienteDTOPorDni(dni).isPresent()) {
             alquilerService.eliminarCliente(dni);
             return ResponseEntity.noContent().build();
         }

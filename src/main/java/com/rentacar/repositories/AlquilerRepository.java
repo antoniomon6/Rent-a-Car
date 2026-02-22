@@ -22,4 +22,7 @@ public interface AlquilerRepository extends JpaRepository<Alquiler, Long> {
 
     @Query("SELECT SUM(a.costoTotal) FROM Alquiler a WHERE MONTH(a.fechaInicio) = :mes AND YEAR(a.fechaInicio) = :anio")
     Double calculateIncomeByMonthAndYear(@Param("mes") int mes, @Param("anio") int anio);
+
+    // Nuevo método para contar alquileres activos de un cliente
+    long countByClienteDniAndFechaFinAfter(String clienteDni, LocalDate fechaActual);
 }

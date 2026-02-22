@@ -1,40 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestión de Vehículos</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head('Gestión de Vehículos')}"></head>
 <body>
-    <nav>
-        <a href="/alquileres">Alquileres</a> |
-        <a href="/vehiculos">Vehículos</a> |
-        <a href="/clientes">Clientes</a>
-    </nav>
-    <h1>Gestión de Vehículos</h1>
+    <nav th:replace="~{layout :: nav}"></nav>
+    
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2"><i class="bi bi-car-front-fill"></i> Gestión de Vehículos</h1>
+            <a href="/vehiculos/nuevo" class="btn btn-primary">
+                <i class="bi bi-plus-circle-fill"></i> Nuevo Vehículo
+            </a>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Matrícula</th>
+                                <th>Modelo</th>
+                                <th>Precio/Día</th>
+                                <th>Estado</th>
+                                <th class="text-center" sec:authorize="hasRole('ADMIN')">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="vehiculo : ${vehiculos}">
+                                <td th:text="${vehiculo.matricula}"></td>
+                                <td th:text="${vehiculo.modelo}"></td>
+                                <td th:text="${vehiculo.precioDia} + ' €'"></td>
+                                <td>
+                                    <span th:class="${'badge ' + 
+                                        (vehiculo.estado.name() == 'DISPONIBLE' ? 'bg-success' : 
+                                        (vehiculo.estado.name() == 'ALQUILADO' ? 'bg-warning text-dark' : 'bg-danger'))}"
+                                          th:text="${vehiculo.estado}">
+                                    </span>
+                                </td>
+                                <td class="text-center" sec:authorize="hasRole('ADMIN')">
+                                    <a th:href="@{/vehiculos/eliminar/{matricula}(matricula=${vehiculo.matricula})}" 
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('¿Estás seguro de eliminar este vehículo?');">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(vehiculos)}">
+                                <td colspan="5" class="text-center py-4 text-muted">No hay vehículos registrados.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <a href="/vehiculos/nuevo">Nuevo Vehículo</a>
-    <br><br>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Matrícula</th>
-                <th>Modelo</th>
-                <th>Precio/Día</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="vehiculo : ${vehiculos}">
-                <td th:text="${vehiculo.matricula}"></td>
-                <td th:text="${vehiculo.modelo}"></td>
-                <td th:text="${vehiculo.precioDia}"></td>
-                <td th:text="${vehiculo.estado}"></td>
-                <td>
-                    <a th:href="@{/vehiculos/eliminar/{matricula}(matricula=${vehiculo.matricula})}"><button>Eliminar</button></a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <footer th:replace="~{layout :: footer}"></footer>
 </body>
 </html>

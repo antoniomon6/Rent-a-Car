@@ -1,6 +1,6 @@
 package com.rentacar.rest;
 
-import com.rentacar.entidades.Vehiculo;
+import com.rentacar.dtos.VehiculoDTO;
 import com.rentacar.services.AlquilerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,8 +22,8 @@ public class VehiculoRestController {
 
     @Operation(summary = "Listar todos los vehículos")
     @GetMapping
-    public List<Vehiculo> listarVehiculos() {
-        return alquilerService.listarVehiculos();
+    public List<VehiculoDTO> listarVehiculos() {
+        return alquilerService.listarVehiculosDTO();
     }
 
     @Operation(summary = "Crear un nuevo vehículo")
@@ -32,8 +32,8 @@ public class VehiculoRestController {
             @ApiResponse(responseCode = "400", description = "Datos inválidos")
     })
     @PostMapping
-    public ResponseEntity<Vehiculo> crearVehiculo(@Valid @RequestBody Vehiculo vehiculo) {
-        Vehiculo nuevoVehiculo = alquilerService.guardarVehiculo(vehiculo);
+    public ResponseEntity<VehiculoDTO> crearVehiculo(@Valid @RequestBody VehiculoDTO vehiculoDTO) {
+        VehiculoDTO nuevoVehiculo = alquilerService.guardarVehiculoDTO(vehiculoDTO);
         return new ResponseEntity<>(nuevoVehiculo, HttpStatus.CREATED);
     }
 
@@ -43,8 +43,8 @@ public class VehiculoRestController {
             @ApiResponse(responseCode = "404", description = "Vehículo no encontrado")
     })
     @GetMapping("/{matricula}")
-    public ResponseEntity<Vehiculo> obtenerVehiculo(@PathVariable String matricula) {
-        return alquilerService.obtenerVehiculoPorMatricula(matricula)
+    public ResponseEntity<VehiculoDTO> obtenerVehiculo(@PathVariable String matricula) {
+        return alquilerService.obtenerVehiculoDTOPorMatricula(matricula)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -52,7 +52,7 @@ public class VehiculoRestController {
     @Operation(summary = "Eliminar vehículo por Matrícula")
     @DeleteMapping("/{matricula}")
     public ResponseEntity<Void> eliminarVehiculo(@PathVariable String matricula) {
-        if (alquilerService.obtenerVehiculoPorMatricula(matricula).isPresent()) {
+        if (alquilerService.obtenerVehiculoDTOPorMatricula(matricula).isPresent()) {
             alquilerService.eliminarVehiculo(matricula);
             return ResponseEntity.noContent().build();
         }

@@ -1,6 +1,7 @@
 package com.rentacar.controllers;
 
 import com.rentacar.entidades.Alquiler;
+import com.rentacar.excepciones.ReglaNegocioException;
 import com.rentacar.services.AlquilerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,7 +39,14 @@ public class AlquilerController {
             model.addAttribute("vehiculos", alquilerService.listarVehiculos());
             return "form-alquiler";
         }
-        alquilerService.crearAlquiler(alquiler);
+        try {
+            alquilerService.crearAlquiler(alquiler);
+        } catch (ReglaNegocioException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("clientes", alquilerService.listarClientes());
+            model.addAttribute("vehiculos", alquilerService.listarVehiculos());
+            return "form-alquiler";
+        }
         return "redirect:/alquileres";
     }
 
