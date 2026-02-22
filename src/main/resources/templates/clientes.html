@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Clientes</title>
+</head>
+<body>
+    <nav>
+        <a href="/alquileres">Alquileres</a> |
+        <a href="/vehiculos">Vehículos</a> |
+        <a href="/clientes">Clientes</a>
+    </nav>
+    <h1>Gestión de Clientes</h1>
+
+    <a href="/clientes/nuevo">Nuevo Cliente</a>
+    <br><br>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>DNI</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="cliente : ${clientes}">
+                <td th:text="${cliente.dni}"></td>
+                <td th:text="${cliente.nombre}"></td>
+                <td th:text="${cliente.email}"></td>
+                <td th:text="${cliente.telefono}"></td>
+                <td>
+                    <a th:href="@{/clientes/eliminar/{dni}(dni=${cliente.dni})}"><button>Eliminar</button></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

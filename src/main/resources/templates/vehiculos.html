@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Vehículos</title>
+</head>
+<body>
+    <nav>
+        <a href="/alquileres">Alquileres</a> |
+        <a href="/vehiculos">Vehículos</a> |
+        <a href="/clientes">Clientes</a>
+    </nav>
+    <h1>Gestión de Vehículos</h1>
+
+    <a href="/vehiculos/nuevo">Nuevo Vehículo</a>
+    <br><br>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Matrícula</th>
+                <th>Modelo</th>
+                <th>Precio/Día</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="vehiculo : ${vehiculos}">
+                <td th:text="${vehiculo.matricula}"></td>
+                <td th:text="${vehiculo.modelo}"></td>
+                <td th:text="${vehiculo.precioDia}"></td>
+                <td th:text="${vehiculo.estado}"></td>
+                <td>
+                    <a th:href="@{/vehiculos/eliminar/{matricula}(matricula=${vehiculo.matricula})}"><button>Eliminar</button></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

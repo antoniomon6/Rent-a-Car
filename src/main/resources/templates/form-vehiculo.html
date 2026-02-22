@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Vehículo</title>
+</head>
+<body>
+    <nav>
+        <a href="/alquileres">Alquileres</a> |
+        <a href="/vehiculos">Vehículos</a> |
+        <a href="/clientes">Clientes</a>
+    </nav>
+    <h1>Nuevo Vehículo</h1>
+
+    <form th:action="@{/vehiculos}" th:object="${vehiculo}" method="post">
+        <div>
+            <label>Matrícula:</label>
+            <input type="text" th:field="*{matricula}" required />
+            <span th:if="${#fields.hasErrors('matricula')}" th:errors="*{matricula}">Error en matrícula</span>
+        </div>
+        <div>
+            <label>Modelo:</label>
+            <input type="text" th:field="*{modelo}" required />
+            <span th:if="${#fields.hasErrors('modelo')}" th:errors="*{modelo}">Error en modelo</span>
+        </div>
+        <div>
+            <label>Precio/Día:</label>
+            <input type="number" step="0.01" th:field="*{precioDia}" required />
+            <span th:if="${#fields.hasErrors('precioDia')}" th:errors="*{precioDia}">Error en precio</span>
+        </div>
+        <div>
+            <label>Estado:</label>
+            <select th:field="*{estado}">
+                <option th:each="estado : ${T(com.rentacar.entidades.Vehiculo.EstadoVehiculo).values()}"
+                        th:value="${estado}" th:text="${estado}"></option>
+            </select>
+        </div>
+        <br>
+        <button type="submit">Guardar</button>
+        <a href="/vehiculos">Cancelar</a>
+    </form>
+</body>
+</html>

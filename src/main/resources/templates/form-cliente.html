@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Cliente</title>
+</head>
+<body>
+    <nav>
+        <a href="/alquileres">Alquileres</a> |
+        <a href="/vehiculos">Vehículos</a> |
+        <a href="/clientes">Clientes</a>
+    </nav>
+    <h1>Nuevo Cliente</h1>
+
+    <form th:action="@{/clientes}" th:object="${cliente}" method="post">
+        <div>
+            <label>DNI:</label>
+            <input type="text" th:field="*{dni}" required />
+            <span th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}">Error en DNI</span>
+        </div>
+        <div>
+            <label>Nombre:</label>
+            <input type="text" th:field="*{nombre}" required />
+            <span th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">Error en nombre</span>
+        </div>
+        <div>
+            <label>Email:</label>
+            <input type="email" th:field="*{email}" required />
+            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error en email</span>
+        </div>
+        <div>
+            <label>Teléfono:</label>
+            <input type="text" th:field="*{telefono}" />
+        </div>
+        <br>
+        <button type="submit">Guardar</button>
+        <a href="/clientes">Cancelar</a>
+    </form>
+</body>
+</html>
