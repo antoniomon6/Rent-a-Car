@@ -11,6 +11,26 @@
                 <i class="bi bi-plus-circle-fill"></i> Nuevo Vehículo
             </a>
         </div>
+
+        <!-- Formulario de Filtrado por Precio -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form th:action="@{/vehiculos}" method="get" class="row g-3 align-items-end">
+                    <div class="col-auto">
+                        <label for="min" class="form-label">Precio Mínimo</label>
+                        <input type="number" step="0.01" id="min" name="min" class="form-control" th:value="${min}" placeholder="0.00">
+                    </div>
+                    <div class="col-auto">
+                        <label for="max" class="form-label">Precio Máximo</label>
+                        <input type="number" step="0.01" id="max" name="max" class="form-control" th:value="${max}" placeholder="1000.00">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i> Filtrar</button>
+                        <a href="/vehiculos" class="btn btn-outline-secondary" th:if="${min != null}">Limpiar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
         
         <div class="card shadow-sm">
             <div class="card-body p-0">
@@ -46,7 +66,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(vehiculos)}">
-                                <td colspan="5" class="text-center py-4 text-muted">No hay vehículos registrados.</td>
+                                <td colspan="5" class="text-center py-4 text-muted">No se encontraron vehículos.</td>
                             </tr>
                         </tbody>
                     </table>

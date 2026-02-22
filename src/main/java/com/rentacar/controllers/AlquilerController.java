@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/alquileres")
@@ -54,5 +55,35 @@ public class AlquilerController {
     public String eliminarAlquiler(@PathVariable Long id) {
         alquilerService.eliminarAlquiler(id);
         return "redirect:/alquileres";
+    }
+
+    // UC 5: Devolver Vehículo
+    @GetMapping("/devolver/{id}")
+    public String devolverVehiculo(@PathVariable Long id) {
+        alquilerService.devolverVehiculo(id);
+        return "redirect:/alquileres";
+    }
+
+    // UC 7: Reporte de Ingresos
+    @GetMapping("/reportes/ingresos")
+    public String reporteIngresos(@RequestParam(required = false) Integer mes, 
+                                  @RequestParam(required = false) Integer anio, 
+                                  Model model) {
+        if (mes == null) mes = LocalDate.now().getMonthValue();
+        if (anio == null) anio = LocalDate.now().getYear();
+        
+        Double ingresos = alquilerService.obtenerIngresosPorMes(mes, anio);
+        model.addAttribute("ingresos", ingresos);
+        model.addAttribute("mes", mes);
+        model.addAttribute("anio", anio);
+        return "reporte-ingresos";
+    }
+
+    // UC 8: Historial Cliente
+    @GetMapping("/historial/{dni}")
+    public String historialCliente(@PathVariable String dni, Model model) {
+        model.addAttribute("alquileres", alquilerService.obtenerHistorialCliente(dni));
+        model.addAttribute("cliente", alquilerService.obtenerClientePorDni(dni).orElse(null));
+        return "historial-cliente";
     }
 }

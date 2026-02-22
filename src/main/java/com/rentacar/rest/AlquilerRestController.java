@@ -1,6 +1,7 @@
 package com.rentacar.rest;
 
 import com.rentacar.dtos.AlquilerDTO;
+import com.rentacar.entidades.Alquiler;
 import com.rentacar.services.AlquilerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -58,5 +59,27 @@ public class AlquilerRestController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // UC 5: Devolver Vehículo
+    @Operation(summary = "Devolver vehículo (Finalizar alquiler)")
+    @PutMapping("/{id}/devolver")
+    public ResponseEntity<Void> devolverVehiculo(@PathVariable Long id) {
+        alquilerService.devolverVehiculo(id);
+        return ResponseEntity.ok().build();
+    }
+
+    // UC 7: Ingresos por mes
+    @Operation(summary = "Obtener ingresos por mes y año")
+    @GetMapping("/ingresos")
+    public ResponseEntity<Double> obtenerIngresos(@RequestParam int mes, @RequestParam int anio) {
+        return ResponseEntity.ok(alquilerService.obtenerIngresosPorMes(mes, anio));
+    }
+
+    // UC 8: Historial Cliente
+    @Operation(summary = "Obtener historial de alquileres de un cliente")
+    @GetMapping("/historial/{dni}")
+    public List<Alquiler> obtenerHistorial(@PathVariable String dni) {
+        return alquilerService.obtenerHistorialCliente(dni);
     }
 }

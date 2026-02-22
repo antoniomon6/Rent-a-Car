@@ -1,6 +1,7 @@
 package com.rentacar.rest;
 
 import com.rentacar.dtos.VehiculoDTO;
+import com.rentacar.entidades.Vehiculo;
 import com.rentacar.services.AlquilerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/vehiculos")
@@ -57,5 +59,14 @@ public class VehiculoRestController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // UC 3: Listar por rango de precio
+    @Operation(summary = "Listar vehículos por rango de precio")
+    @GetMapping("/buscar")
+    public List<VehiculoDTO> buscarPorPrecio(@RequestParam Double min, @RequestParam Double max) {
+        return alquilerService.listarVehiculosPorPrecio(min, max).stream()
+                .map(v -> new VehiculoDTO(v.getMatricula(), v.getModelo(), v.getPrecioDia(), v.getEstado()))
+                .collect(Collectors.toList());
     }
 }

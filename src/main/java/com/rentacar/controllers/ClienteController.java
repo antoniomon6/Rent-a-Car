@@ -24,6 +24,13 @@ public class ClienteController {
         return "clientes";
     }
 
+    // UC 6: Listar Clientes por Facturación
+    @GetMapping("/top-facturacion")
+    public String listarClientesPorFacturacion(Model model) {
+        model.addAttribute("clientes", alquilerService.listarClientesPorFacturacion());
+        return "clientes";
+    }
+
     @GetMapping("/nuevo")
     public String mostrarFormulario(Model model) {
         model.addAttribute("cliente", new Cliente());

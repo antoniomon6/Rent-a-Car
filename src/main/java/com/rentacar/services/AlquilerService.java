@@ -10,31 +10,45 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AlquilerService {
-    // Métodos para Alquiler
-    Alquiler crearAlquiler(Alquiler alquiler); // Mantenemos para MVC
-    AlquilerDTO crearAlquilerDTO(AlquilerDTO alquilerDTO); // Nuevo para REST
+    // --- Alquileres ---
+    Alquiler crearAlquiler(Alquiler alquiler);
+    AlquilerDTO crearAlquilerDTO(AlquilerDTO alquilerDTO);
     List<Alquiler> listarAlquileres();
-    List<AlquilerDTO> listarAlquileresDTO(); // Nuevo para REST
+    List<AlquilerDTO> listarAlquileresDTO();
     Optional<Alquiler> obtenerAlquilerPorId(Long id);
-    Optional<AlquilerDTO> obtenerAlquilerDTOPorId(Long id); // Nuevo para REST
+    Optional<AlquilerDTO> obtenerAlquilerDTOPorId(Long id);
     void eliminarAlquiler(Long id);
+    
+    // UC 5: Devolver Vehículo
+    void devolverVehiculo(Long alquilerId);
 
-    // Métodos para Cliente
-    Cliente guardarCliente(Cliente cliente); // Mantenemos para MVC
-    ClienteDTO guardarClienteDTO(ClienteDTO clienteDTO); // Nuevo para REST
+    // UC 7: Ingresos por mes
+    Double obtenerIngresosPorMes(int mes, int anio);
+
+    // UC 8: Historial Cliente
+    List<Alquiler> obtenerHistorialCliente(String dni);
+
+    // --- Clientes ---
+    Cliente guardarCliente(Cliente cliente);
+    ClienteDTO guardarClienteDTO(ClienteDTO clienteDTO);
     List<Cliente> listarClientes();
-    List<ClienteDTO> listarClientesDTO(); // Nuevo para REST
+    List<ClienteDTO> listarClientesDTO();
     Optional<Cliente> obtenerClientePorDni(String dni);
-    Optional<ClienteDTO> obtenerClienteDTOPorDni(String dni); // Nuevo para REST
+    Optional<ClienteDTO> obtenerClienteDTOPorDni(String dni);
     void eliminarCliente(String dni);
+    
+    // UC 6: Clientes por facturación
+    List<Cliente> listarClientesPorFacturacion();
 
-    // Métodos para Vehiculo
-    Vehiculo guardarVehiculo(Vehiculo vehiculo); // Mantenemos para MVC
-    VehiculoDTO guardarVehiculoDTO(VehiculoDTO vehiculoDTO); // Nuevo para REST
+    // --- Vehículos ---
+    Vehiculo guardarVehiculo(Vehiculo vehiculo);
+    VehiculoDTO guardarVehiculoDTO(VehiculoDTO vehiculoDTO);
     List<Vehiculo> listarVehiculos();
-    List<VehiculoDTO> listarVehiculosDTO(); // Nuevo para REST
+    List<VehiculoDTO> listarVehiculosDTO();
     Optional<Vehiculo> obtenerVehiculoPorMatricula(String matricula);
-    Optional<VehiculoDTO> obtenerVehiculoDTOPorMatricula(String matricula); // Nuevo para REST
+    Optional<VehiculoDTO> obtenerVehiculoDTOPorMatricula(String matricula);
     void eliminarVehiculo(String matricula);
+    
+    // UC 3: Vehículos por precio
     List<Vehiculo> listarVehiculosPorPrecio(Double min, Double max);
 }

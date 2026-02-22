@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Reporte de Ingresos')}"></head>
+<body>
+    <nav th:replace="~{layout :: nav}"></nav>
+    
+    <div class="container mt-4">
+        <h1 class="h2 mb-4"><i class="bi bi-graph-up"></i> Reporte de Ingresos</h1>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form th:action="@{/alquileres/reportes/ingresos}" method="get" class="row g-3 align-items-end">
+                    <div class="col-auto">
+                        <label for="mes" class="form-label">Mes</label>
+                        <select id="mes" name="mes" class="form-select">
+                            <option th:each="i : ${#numbers.sequence(1, 12)}" 
+                                    th:value="${i}" 
+                                    th:text="${i}" 
+                                    th:selected="${i == mes}"></option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <label for="anio" class="form-label">Año</label>
+                        <input type="number" id="anio" name="anio" class="form-control" th:value="${anio}" />
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Consultar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h3 class="card-title">Total Ingresos</h3>
+                <p class="display-4 fw-bold text-success" th:text="${#numbers.formatCurrency(ingresos)}">0,00 €</p>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

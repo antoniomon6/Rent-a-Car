@@ -19,8 +19,16 @@ public class VehiculoController {
     private AlquilerService alquilerService;
 
     @GetMapping
-    public String listarVehiculos(Model model) {
-        model.addAttribute("vehiculos", alquilerService.listarVehiculos());
+    public String listarVehiculos(@RequestParam(required = false) Double min,
+                                  @RequestParam(required = false) Double max,
+                                  Model model) {
+        if (min != null && max != null) {
+            model.addAttribute("vehiculos", alquilerService.listarVehiculosPorPrecio(min, max));
+            model.addAttribute("min", min);
+            model.addAttribute("max", max);
+        } else {
+            model.addAttribute("vehiculos", alquilerService.listarVehiculos());
+        }
         return "vehiculos";
     }
 

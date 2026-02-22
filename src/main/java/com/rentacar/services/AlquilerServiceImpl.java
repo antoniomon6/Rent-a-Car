@@ -36,12 +36,12 @@ public class AlquilerServiceImpl implements AlquilerService {
     @Override
     @Transactional
     public Alquiler crearAlquiler(Alquiler alquiler) {
-        // 1. Validación de fechas: La fecha de fin debe ser posterior a la de inicio
+        // 1. Validación de fechas
         if (alquiler.getFechaFin().isBefore(alquiler.getFechaInicio())) {
             throw new ReglaNegocioException("La fecha de fin debe ser posterior a la fecha de inicio");
         }
 
-        // 2. Disponibilidad: No se puede alquilar un coche que esté en estado "En Reparación" o ya alquilado en esas fechas
+        // 2. Disponibilidad
         Vehiculo vehiculo = vehiculoRepository.findById(alquiler.getVehiculo().getMatricula())
                 .orElseThrow(() -> new ReglaNegocioException("Vehículo no encontrado"));
 
@@ -56,7 +56,7 @@ public class AlquilerServiceImpl implements AlquilerService {
             throw new ReglaNegocioException("El vehículo ya está alquilado en esas fechas");
         }
 
-        // 3. Cálculo automático: El costo_total se calcula solo al guardar: (dias * precio_dia)
+        // 3. Cálculo automático
         long dias = ChronoUnit.DAYS.between(alquiler.getFechaInicio(), alquiler.getFechaFin());
         alquiler.setCostoTotal(dias * vehiculo.getPrecioDia());
 
@@ -86,6 +86,17 @@ public class AlquilerServiceImpl implements AlquilerService {
     }
 
     @Override
+    @Transactional
+    public void devolverVehiculo(Long alquilerId) {
+        Alquiler alquiler = alquilerRepository.findById(alquilerId)
+                .orElseThrow(() -> new ReglaNegocioException("Alquiler no encontrado"));
+        
+        Vehiculo vehiculo = alquiler.getVehiculo();
+        vehiculo.setEstado(Vehiculo.EstadoVehiculo.DISPONIBLE);
+        vehiculoRepository.save(vehiculo);
+    }
+
+    @Override
     public List<Alquiler> listarAlquileres() {
         return alquilerRepository.findAll();
     }
@@ -110,6 +121,16 @@ public class AlquilerServiceImpl implements AlquilerService {
     @Override
     public void eliminarAlquiler(Long id) {
         alquilerRepository.deleteById(id);
+    }
+
+    @Override
+    public Double obtenerIngresosPorMes(int mes, int anio) {
+        return alquilerRepository.calculateIncomeByMonthAndYear(mes, anio);
+    }
+
+    @Override
+    public List<Alquiler> obtenerHistorialCliente(String dni) {
+        return alquilerRepository.findByClienteDni(dni);
     }
 
     // --- Métodos para Cliente ---
@@ -144,6 +165,11 @@ public class AlquilerServiceImpl implements AlquilerService {
         return clienteRepository.findAll().stream()
                 .map(this::mapToClienteDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Cliente> listarClientesPorFacturacion() {
+        return alquilerRepository.findTopClientesByFacturacion();
     }
 
     @Override
